@@ -21,8 +21,9 @@ def main():
 	numcalls = 0
 
 	while True:
+
 		try:
-			if (numcalls < args.numcalls):
+			if (numcalls != int(args.numcalls)):
 
 				target = args.target
 
@@ -41,17 +42,21 @@ def main():
 
 				numcalls += 1
 
-				print('[*] Call Sent to {}'.format(target))
+				print('[*] Call Sent to {}, sleeping for {} seconds...'.format(target, args.frequency))
 
-				time.sleep(args.frequency)
+				time.sleep(int(args.frequency))
 			
-			elif numcalls == args.numcalls:
+			elif numcalls == int(args.numcalls):
 
-				print('[-] Desired number of calls reached, quitting...')
+				print('\n[-] Desired number of calls reached, quitting...\n')
 
-		except (KeyboardInterrupt, SystemExit):
+				exit()
+
+		except (KeyboardInterrupt):
 
 			print('\n[-] KeyboardInterrupt caught, quitting...')
+
+			exit()
 
 
 
@@ -98,7 +103,8 @@ def setup():
 	parser.add_argument(
 		'--prefix', 
 		help = 'country code for random callerids',
-		type = str,
+		nargs = '?',
+		default = 1,
 		const = 1
 	)
 
@@ -119,17 +125,17 @@ def setup():
 	parser.add_argument(
 		'--frequency', 
 		help = 'send a call every X seconds', 
-		required = False, 
-		type = int,
+		nargs = '?',
+		default = 60,
 		const = 60
 	)
 
 	parser.add_argument(
 		'--numcalls', 
 		help = 'total number of calls to send', 
-		required = False, 
-		type = int,
-		const = math.inf
+		nargs = '?',
+		default = math.inf,
+		const = math.inf,
 	)
 
 	args = parser.parse_args()
