@@ -23,34 +23,34 @@ def main():
 	while True:
 
 		try:
-			if (numcalls != int(args.numcalls)):
+			if (numcalls < args.numcalls):
 
 				target = args.target
 
 				if not args.callid:
-					callid = genid(args.prefix) if args.prefix else genid('')
-	
+					callid = genid(args.prefix) if args.prefix else genid('1')
 				if args.folder:
 					files = os.listdir(args.folder)
-					sound = args.folder + random.choice(files).split('.')[0]
+					sound = args.folder + random.choice(files)
 				elif args.file:
-					sound = args.file.split('.')[0]
+					sound = args.file
 				else:
 					sound = 'hello-world'
 
-				call(target, callid, sound)
+				call(target, callid, sound.split('.')[0])
 
 				numcalls += 1
 
-				print('[*] Call Sent to {}, sleeping for {} seconds...'.format(target, args.frequency))
+				print('[*] Call Sent to {} using callerid {} and soundfile {}, sleeping for {} seconds...'.format(formatnum(target), formatnum(callid), sound, args.frequency))
 
-				time.sleep(int(args.frequency))
-			
-			elif numcalls == int(args.numcalls):
 
-				print('\n[-] Desired number of calls reached, quitting...\n')
+				if numcalls == int(args.numcalls):
 
-				exit()
+					print('\n[-] Desired number of calls reached, quitting...\n')
+
+					exit()
+				else:
+					time.sleep(int(args.frequency))
 
 		except (KeyboardInterrupt):
 
@@ -80,7 +80,20 @@ def call(target, callid, sound):
 	).spool()
 
 
-genid = lambda pre : str(pre) + str(random.randint(1000000000, 9999999999))
+def genid(pre):
+
+	components = pre.split('.')
+
+	to_gen = abs(10 - (len(components[1]))) if len(components) == 2 else 10
+
+	components.append('')
+
+	suffix = ''.join([str(i) for i in random.sample(range(0, 10), to_gen)])
+
+	return components[0] + components[1] + suffix
+
+def formatnum(numstr):
+	return '{}({})-{}-{}'.format(numstr[:-10], numstr[-10:-7], numstr[-7:-4], numstr[-4:])	
 
 
 def setup():
@@ -102,10 +115,10 @@ def setup():
 
 	parser.add_argument(
 		'--prefix', 
-		help = 'country code for random callerids',
+		help = 'callerid prefix, specified as COUNTRYCODE.PREFIX',
 		nargs = '?',
-		default = 1,
-		const = 1
+		default = '1',
+		const = '1'
 	)
 
 	parser.add_argument(
@@ -134,6 +147,7 @@ def setup():
 		'--numcalls', 
 		help = 'total number of calls to send', 
 		nargs = '?',
+		type = int,
 		default = math.inf,
 		const = math.inf,
 	)
