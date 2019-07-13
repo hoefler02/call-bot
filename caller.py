@@ -12,53 +12,37 @@ import time
 import os
 
 
-def main():
-
-	args = setup()
+def main(args):
 
 	print('[+] Starting Caller Tool...\n')
 
-	numcalls = 0
+	calls = 0
 
 	while True:
 
 		try:
-			if (numcalls < args.numcalls):
 
-				target = args.target
+			target = args.target
+			callid = (genid(args.prefix) if args.prefix else genid('1')) if not args.callid else args.callid
+			sound = (args.folder + random.choice(os.listdir(args.folder))) if args.folder else (args.file) if args.file else 'hello-world'
 
-				if not args.callid:
-					callid = genid(args.prefix) if args.prefix else genid('1')
-				if args.folder:
-					files = os.listdir(args.folder)
-					sound = args.folder + random.choice(files)
-				elif args.file:
-					sound = args.file
-				else:
-					sound = 'hello-world'
+			call(target, callid, sound.split('.')[0])
 
-				call(target, callid, sound.split('.')[0])
+			print('[*] Call Sent to {} using callerid {} and soundfile {}, sleeping for {} seconds...'.format(formatnum(target), formatnum(callid), sound, args.frequency))
 
-				numcalls += 1
+			calls += 1
+			
+			if calls >= int(args.numcalls):
+				
+				print('\n[-] Reached {} calls, quitting...\n'.format(calls))
+				exit()
 
-				print('[*] Call Sent to {} using callerid {} and soundfile {}, sleeping for {} seconds...'.format(formatnum(target), formatnum(callid), sound, args.frequency))
-
-
-				if numcalls == int(args.numcalls):
-
-					print('\n[-] Desired number of calls reached, quitting...\n')
-
-					exit()
-				else:
-					time.sleep(int(args.frequency))
+			time.sleep(int(args.frequency))
 
 		except (KeyboardInterrupt):
-
+			
 			print('\n[-] KeyboardInterrupt caught, quitting...')
-
 			exit()
-
-
 
 
 def call(target, callid, sound):
@@ -72,7 +56,7 @@ def call(target, callid, sound):
 
 		Application(
 			'Playback',
-			sound
+			sound # supports many different types of audio files
 		), 
 
 		user = 'asterisk' # assuming asterisk is running as its own user (recommended)
@@ -86,13 +70,12 @@ def genid(pre):
 
 	to_gen = abs(10 - (len(components[1]))) if len(components) == 2 else 10
 
-	components.append('')
-
 	suffix = ''.join([str(i) for i in random.sample(range(0, 10), to_gen)])
 
-	return components[0] + components[1] + suffix
+	return ''.join(components) + suffix
 
 def formatnum(numstr):
+
 	return '{}({})-{}-{}'.format(numstr[:-10], numstr[-10:-7], numstr[-7:-4], numstr[-4:])	
 
 
@@ -159,4 +142,4 @@ def setup():
 
 
 if __name__ == '__main__':
-	main()
+	main(setup())
