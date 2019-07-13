@@ -37,7 +37,8 @@ def main(args):
 				print('\n[-] Reached {} calls, quitting...\n'.format(calls))
 				exit()
 
-			time.sleep(int(args.frequency))
+			deviation = round(args.frequency / 10)
+			time.sleep(int(args.frequency) + random.randint(-deviation, deviation))
 
 		except (KeyboardInterrupt):
 			
