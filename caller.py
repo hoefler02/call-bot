@@ -12,7 +12,6 @@ import time
 import os
 
 
-
 def main():
 
 	args = setup()
@@ -22,39 +21,21 @@ def main():
 	numcalls = 0
 
 	while True:
-
 		try:
-			
 			if (numcalls < args.numcalls):
 
 				target = args.target
 
 				if not args.callid:
-
-					if args.prefix:
-
-						callid = genid(args.prefix)
-
-					else:
-
-						callid = genid('')
-						
-
-
+					callid = genid(args.prefix) if args.prefix else genid('')
+	
 				if args.folder:
-
 					files = os.listdir(args.folder)
-
 					sound = args.folder + random.choice(files).split('.')[0]
-
 				elif args.file:
-
 					sound = args.file.split('.')[0]
-
 				else:
-
 					sound = 'hello-world'
-
 
 				call(target, callid, sound)
 
@@ -94,9 +75,7 @@ def call(target, callid, sound):
 	).spool()
 
 
-
 genid = lambda pre : str(pre) + str(random.randint(1000000000, 9999999999))
-
 
 
 def setup():
@@ -152,8 +131,6 @@ def setup():
 		type = int,
 		const = math.inf
 	)
-
-
 
 	args = parser.parse_args()
 
